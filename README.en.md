@@ -4,18 +4,15 @@
 
 ## Summary
 
-`source-owner-audit` is a lightweight skill for read-only source-first audits before implementation or migration. It helps identify the current authoritative source owner, contract evidence, parity gaps, stale surfaces, and decision boundaries.
+`source-owner-audit` helps an agent answer: “which code, API, config, or doc should we follow now, and does this change match it?”
 
-The skill focuses on two failure modes:
+It is read-only. It finds the source owner first, then reports evidence, mismatches, and a recommendation. File edits are only in scope when the user expands the task.
 
-- Treating old summaries, memory, stale docs, copied code, or generated surfaces as current owners
-- Turning backend capability or command existence into implementation TODOs without caller/UI intent or product approval
+It turns broad source-of-truth questions into three concrete answers:
 
-The goal is not to edit code immediately.
-
-The goal is to classify what is the current source of truth, what is derived/evidence/stale, and what needs a decision-owner boundary.
-
-`Spec:` Agent Skills / SKILL.md | `License:` MIT | `Agents:` Codex, ChatGPT, Agent Skills-compatible tools
+- What should we follow?
+- What does not match?
+- What still needs a decision?
 
 ## Quick Start
 
@@ -30,30 +27,24 @@ Or copy `skills/source-owner-audit` into your agent skills directory.
 **Use**
 
 ```text
-Use $source-owner-audit to audit the current owner path, caller path, contract evidence, and disposition for this feature without editing files.
+Use $source-owner-audit. Which code or doc should this API response follow?
+
+Use $source-owner-audit to check whether this screen behavior still matches the existing owner. Do not edit files.
+
+Use $source-owner-audit to check whether this doc is still true against the current code.
 ```
 
 ## Use When
 
-- Multiple repos, APIs, docs, or config surfaces may claim to be the source of truth
-- A prior summary or old task doc must be revalidated against current source
-- Porting, migration, or parity work needs owner evidence before implementation
-- Backend command/API existence must be separated from caller/UI intent or product approval
-- A dirty worktree requires read-only audit results for a source-of-truth or owner dispute
-- Source-of-truth or owner-dispute findings should be reported as owner path, source evidence, impact, and disposition
+- You are not sure which repo, file, API, config, or doc to follow
+- You have an old summary or task doc and need it checked against current code
+- Porting, migration, or routing work needs the original behavior to preserve
+- You want a read-only review of a proposed or current implementation against the owner
+- You need to separate “the backend supports this” from “the UI or product approved this behavior”
 
-## Project Value Preservation Skills
+## Related Skills
 
-These skills help long-lived projects remain understandable and changeable.
-
-- [`structure-first`](https://github.com/perhapsspy/structure-first): Preserve readable code flow, responsibility boundaries, maintainability, and contract-focused tests.
-- [`project-context`](https://github.com/perhapsspy/project-context): Preserve project memory, decisions, current task state, and continuity in ordinary repo files.
-- [`interactive-state-flow`](https://github.com/perhapsspy/interactive-state-flow): Separate prompt source state from expensive presentation, async work, and execution paths.
-- [`justified-change`](https://github.com/perhapsspy/justified-change): Keep code changes proportional, justified, and verifiable.
-- [`codex-token-discipline`](https://github.com/perhapsspy/codex-token-discipline): Manage long sessions, broad reads, subagents, and always-read instruction costs.
-- `source-owner-audit`: Classify the current owner and contract evidence before deciding what should or should not change.
-
-Each skill can be installed and used independently. This README introduces related skills in the same philosophy; individual `SKILL.md` files do not call or depend on one another.
+This skill works independently. Related skills in the same family include [`structure-first`](https://github.com/perhapsspy/structure-first), [`project-context`](https://github.com/perhapsspy/project-context), and [`justified-change`](https://github.com/perhapsspy/justified-change).
 
 ## Support
 

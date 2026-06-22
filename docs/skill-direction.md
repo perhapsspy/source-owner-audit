@@ -2,39 +2,38 @@
 
 ## 목적
 
-- 구현이나 마이그레이션 전에 현재 권위 있는 source owner와 계약 근거를 read-only로 판정한다.
+- 현재 소스를 기준으로 “따라야 할 것 / 다른 것 / 결정할 것”을 읽기 전용으로 답한다.
+- 명시된 검토 대상이 기준과 맞는지 비교하고, 소유권 수준의 판정을 낸다.
 
-## 유지할 것
+## 핵심 방향
 
-- 현재 source evidence를 최종 근거로 둔다.
-- 메모리, 이전 요약, task doc, audit note는 routing hint로만 둔다.
-- source owner, static caller/UX contract owner, write owner, read owner, doc owner, task owner, migration owner, decision owner를 구분한다.
-- backend capability나 command 존재만으로 implementation TODO를 열지 않는다.
-- 기존 제품 계약과 UX를 임의로 축소하거나 새로 발명하지 않는다.
-- audit-only scope에서는 파일 수정, TODO 전환, 배포 제안, 문서 재구성을 하지 않는다.
+- 현재 소스 근거를 최종 근거로 둔다.
+- 메모리, 이전 요약, 작업 문서, 감사 노트는 탐색 힌트로만 둔다.
+- 백엔드 기능, 호출자/화면 의도, 제품 승인을 별도 근거로 분리한다.
+- 백엔드 기능만으로 구현 권고를 만들지 않는다.
+- 기존 제품 계약과 화면 동작을 기준 근거에 따라 보존한다.
+- 감사 전용 범위는 읽기 전용 근거, 비교, 판정에 머문다.
 
-## 피할 것
+## 답해야 하는 질문
 
-- 일반 코드 변경 scope discipline을 흡수하는 방향. 그 영역은 `justified-change`가 맡는다.
-- 코드 구조나 contract test 설계를 흡수하는 방향. 그 영역은 `structure-first`가 맡는다.
-- 문서 패키지 재구성이나 current-canon promotion을 흡수하는 방향. 그 영역은 문서/컨텍스트 계열 스킬이 맡는다.
-- runtime UI freshness/source-state ownership까지 포함하는 방향. 그 영역은 interactive state 계열 스킬이 맡는다.
-- 특정 회사/repo, 이슈 번호, 배포 flow, 브랜치 정책을 shipped skill 본문에 넣는 방향.
+- 따라야 할 기준은 무엇인가.
+- 기준과 다른 부분은 무엇인가.
+- 지금 결정이 필요한 부분은 무엇인가.
 
-## sibling skill 궁합
+라벨은 답을 짧게 만드는 경우에만 쓴다. 라벨 자체보다 사용자가 잘못된 기준으로 다음 판단을 넘기지 않게 하는 것이 목적이다.
 
-- `source-owner-audit`: 변경 전에 현재 owner와 evidence를 분류한다.
-- `justified-change`: 변경할 때 목표, 직접 영향 범위, 검증 기준을 맞춘다.
-- `structure-first`: 코드의 primary flow, decision/write-path owner, contract-focused tests를 정리한다.
-- `structure-first-docs`: 문서 패키지의 reader flow, current canon, evidence/history 분리를 정리한다.
-- `project-context`: 장기 작업 상태, reference, logs, handoff를 저장소 문서로 유지한다.
-- `codex-token-discipline`: 넓은 읽기, 서브에이전트, always-read 지시문 비용을 관리한다.
-- `interactive-state-flow`: interactive runtime에서 source state, freshness, async/presentation commit owner를 다룬다.
+## 범위 밖
+
+- 일반 코드 변경 범위 관리.
+- 코드 구조와 계약 테스트 설계.
+- 문서 패키지 재구성과 현재 정본 승격.
+- 런타임 화면 최신성 판단.
+- 특정 회사/저장소, 이슈 번호, 배포 흐름, 브랜치 정책.
 
 ## 수정 기준
 
-- 반복해서 오해되는 audit 판단 기준만 shipped skill에 추가한다.
-- 출력 taxonomy는 유지하되, 특정 조직이나 repo 사례로 좁히지 않는다.
-- 예시가 꼭 필요하면 `SKILL.md`에 아주 짧게 넣거나, 조건부로 읽을 수 있는 스킬 패키지 내부 reference로 분리한다.
-- 한국어 문서는 영문 base skill의 의미를 보존하되 자연스럽고 직접적으로 쓴다.
-- 저장소 운영 문서는 스킬 사용 계약을 대신하지 않는다.
+- 반복해서 오해되는 감사 판단 기준만 배포 스킬에 추가한다.
+- 출력 분류 체계는 유지하되, 특정 조직이나 저장소 사례보다 일반 기준 근거를 우선한다.
+- 예시가 꼭 필요하면 `SKILL.md`에 아주 짧게 넣거나, 조건부로 읽을 수 있는 스킬 패키지 내부 참조 문서로 분리한다.
+- 한국어 문서는 영문 기본 스킬의 의미를 보존하되 자연스럽고 직접적으로 쓴다.
+- 저장소 운영 문서는 패키징과 유지보수 기준을 맡고, 스킬 사용 계약은 배포 스킬 본문에 둔다.

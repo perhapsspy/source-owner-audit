@@ -1,15 +1,19 @@
 ---
 name: source-owner-audit
-description: Use when the central question is a read-only source-of-truth or contract-owner audit before implementation, migration, porting, parity work, or routing changes. Helps identify the authoritative source owner, static caller/UX contract owner, contract evidence, stale or derived surfaces, migration owner, parity gap, and decision-owner boundary from current code/docs/config/API evidence. Avoid for ordinary code edits, runtime UI state ownership, document restructuring, task-state storage, AGENTS editing, token budgeting, or work selection unless those tasks explicitly ask which current source owns the truth.
+description: "Use for read-only source-of-truth audits: identify the current code, API, config, doc, or behavior to follow; compare a proposed, migrated, ported, or current change against it; and report evidence, mismatches, unresolved decisions, and owner-level recommendations."
 ---
 
 # Source Owner Audit
 
 ## Purpose
 
-Determine the current authoritative source owner before implementation, migration, or routing changes.
+Answer three questions from current source evidence:
 
-This is an audit skill. Default to read-only evidence gathering and disposition. Do not turn the audit into edits, TODO ownership, migrations, deploy steps, or broad cleanup unless the user explicitly expands the scope.
+- What should we follow?
+- What differs?
+- What still needs a decision?
+
+Default to read-only audit work: evidence, comparison, classification, and owner-level recommendation.
 
 ## Core Bias
 
@@ -17,17 +21,18 @@ This is an audit skill. Default to read-only evidence gathering and disposition.
 - Start from concrete owner surfaces: routes, entrypoints, commands, schemas, API clients, config, tests, runbooks, owner docs, or user-visible behavior.
 - Trace the smallest source paths needed to prove ownership.
 - Separate confirmed facts from inference.
-- Do not invent, simplify, or shrink an existing product contract or UX to make implementation easier.
-- If the source leaves a policy/product choice open, name the decision owner instead of choosing silently.
+- Preserve existing product contracts and UX unless owner evidence says otherwise.
+- Name the decision owner when source evidence leaves a policy or product choice open.
 
 ## Operating Flow
 
-1. **Fix the audit question and boundary.**
-   - Name the question: source owner, contract owner, static caller/UX contract owner, parity gap, stale-summary revalidation, migration owner, or evidence sufficiency for possible later implementation.
-   - Name closed scopes: no edits, no TODO conversion, no doc restructuring, no deploy, no live mutation, no broad cleanup.
+1. **Name the practical question and boundary.**
+   - Start with the user's question: what should this follow, what differs from that owner, or what decision remains open.
+   - Add owner labels such as source owner, contract owner, caller/UX owner, migration owner, or decision owner only when they make the answer clearer.
+   - Keep the audit boundary explicit: read-only by default; execution scope only when the user expands it.
 
-2. **Inventory candidate surfaces narrowly.**
-   - Use the surface named by the user first.
+2. **Find what to follow.**
+   - Use the feature, change, doc, route, API, config, or behavior named by the user first.
    - Prefer path-specific reads over repo-wide scans.
    - For dirty worktrees, start with status and small path-scoped diffs when local changes could affect the answer.
    - For cross-repo or cross-surface work, verify each candidate owner independently.
@@ -36,54 +41,44 @@ This is an audit skill. Default to read-only evidence gathering and disposition.
    - Follow caller -> adapter/client/helper -> route/API -> command/service -> persistence/schema/test owner where relevant.
    - Distinguish source owner, static caller/UX contract owner, write owner, read owner, doc owner, task owner, migration owner, and decision owner.
    - Distinguish current production owners from legacy, fallback, compatibility, generated, copied, or evidence-only surfaces.
-   - Do not treat backend capability or command existence as caller intent, access policy, or product approval.
+   - Treat backend capability as capability evidence; caller intent, access policy, and product approval need their own evidence.
 
-4. **Compare against the owner, not the memory.**
-   - Compare candidate surfaces to the current owner source.
+4. **Compare against the owner.**
+   - Compare candidate surfaces, proposed changes, ports, or reviewed implementations to the current owner source.
    - For UX parity, compare affordances, labels, state transitions, empty/error states, density, and permission behavior, not only backend capability.
    - Mark a gap as implementation work only when source evidence and user scope support that ownership.
 
-5. **Classify each finding.**
-   - `Owner`
-   - `Derived/Router`
-   - `Legacy/Compatibility`
-   - `Stale/Superseded`
-   - `Evidence-only`
-   - `Parity gap`
-   - `Caller intent/access policy unconfirmed`
-   - `Decision needed`
-   - `Out of scope`
-   - `Existing-skill handoff`
+5. **Keep labels optional.**
+   - Treat these as optional labels, not an output template.
+   - `Surface role`: `Owner`, `Derived/Router`, `Legacy/Compatibility`, `Stale/Superseded`, or `Evidence-only`
+   - `Comparison`: `Matches owner`, `Owner divergence`, `Parity gap`, or `Not compared`
+   - `Evidence state`: `Confirmed`, `Caller intent/access policy unconfirmed`, `Decision needed`, `Insufficient current evidence`, or `Out of scope`
+   - `Handoff`: `Existing-skill handoff`, only when another execution layer should take over
+
+A derived surface can still match its owner; an owner divergence can still require a decision.
 
 ## Output Contract
 
-Lead with the recommendation or disposition when it is clear. For findings, prefer severity or impact order.
+Lead with the practical answer. Use only the fields that help the answer.
 
-Each finding should include:
+Default shape:
+- `Recommendation:` follow, fix, decide, or insufficient evidence
+- `Evidence:` smallest checked owner path and compared path
+- `Difference:` what matches, differs, or was not checked
+- `Decision needed:` unresolved policy, product, access, or ownership choice, if any
 
-- `Surface:` the questioned file, route, feature, API, doc, config, or behavior
-- `Owner path:` current authoritative source
-- `Candidate/caller path:` competing or consuming path, when different
-- `Evidence:` concrete source paths, symbols, routes, endpoints, schemas, tests, docs, commands, or observed behavior
-- `Impact:` behavioral or ownership consequence
-- `Disposition:` one classification from the audit taxonomy
-- `Next:` only if the user scope allows a next action
+For multiple surfaces, use `Findings:` with one compact bullet per surface. A finding may include owner path, candidate path, evidence, impact, and recommendation when needed.
 
-If evidence is incomplete, say what was checked and classify the result as `Decision needed`, `Caller intent/access policy unconfirmed`, or `Insufficient current evidence` rather than filling the gap with inference.
+Compatibility: `Disposition:` may be used as an optional legacy summary of role, comparison, and evidence state. Do not include taxonomy labels unless they clarify the answer.
 
-## Defer Boundaries
+If evidence is incomplete, say what was checked and classify the result as `Decision needed`, `Caller intent/access policy unconfirmed`, or `Insufficient current evidence`.
 
-- Code implementation, refactor scope, and verification planning belong to the change-execution layer after the audit.
-- Code structure, decision/write-path redesign, and contract tests belong to the code-structure layer after the owner is known.
-- Document package restructuring, current-canon promotion, task logs, and reference migration belong to document/context layers after the owner is known.
-- Always-read instruction edits, token-budget strategy, runtime UI freshness ownership, and work-board selection are separate concerns unless the user asks a source-owner audit about them.
+Recommendations stay at the owner-disposition level. Produce implementation sequencing or verification planning only when the user expands scope.
 
-## Anti-Patterns
+## Handoff Boundaries
 
-- Relying on memory or old summaries as proof.
-- Starting from a broad grep when a concrete surface is named.
-- Treating command/API existence as implementation approval.
-- Treating a copied, generated, fallback, or evidence-only surface as the owner without proof.
-- Opening implementation TODOs from audit-only findings.
-- Rewriting code, docs, AGENTS files, task state, or deployment config during a read-only audit.
-- Hiding uncertainty behind a confident recommendation.
+Stop at owner-backed recommendation by default.
+
+If the user expands scope, use the audit result as input for edits, refactors, tests, document restructuring, task-state work, or other follow-up execution.
+
+Treat runtime UI freshness, always-read instructions, token budgeting, and work-board selection as source-owner questions only when the user asks for that ownership.

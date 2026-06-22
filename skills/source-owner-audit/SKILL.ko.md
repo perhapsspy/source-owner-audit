@@ -4,83 +4,78 @@
 
 ## 목적
 
-구현, 마이그레이션, 라우팅 변경 전에 현재 권위 있는 source owner를 판정한다.
+현재 소스 근거로 세 가지 질문에 답한다.
 
-이 스킬은 감사 스킬이다. 기본값은 read-only 근거 수집과 disposition 분류다. 사용자가 명시적으로 범위를 넓히지 않았다면 감사 결과를 코드 수정, TODO 소유권, 문서 마이그레이션, 배포 단계, 넓은 정리 작업으로 바꾸지 않는다.
+- 무엇을 따라야 하는가?
+- 무엇이 다른가?
+- 무엇이 아직 결정이 필요한가?
+
+기본 범위는 읽기 전용 감사 작업: 근거, 비교, 분류, 소유권 수준의 권고다.
 
 ## 핵심 기준
 
-- 현재 소스가 메모리, 이전 요약, 과거 작업 노트, stale 문서, 추론된 parity보다 우선한다.
-- route, entrypoint, command, schema, API client, config, test, runbook, owner 문서, 사용자에게 보이는 동작 같은 구체적인 owner surface에서 시작한다.
+- 현재 소스가 메모리, 이전 요약, 과거 작업 노트, 오래된 문서, 추론된 일치보다 우선한다.
+- 경로, 진입점, 명령, 스키마, API 클라이언트, 설정, 테스트, 운영 문서, 기준 문서, 사용자 동작처럼 구체적인 기준 표면에서 시작한다.
 - 소유권을 증명하는 데 필요한 가장 작은 소스 경로만 추적한다.
 - 확인된 사실과 추론을 분리한다.
-- 구현을 쉽게 만들려고 기존 제품 계약이나 UX를 새로 발명하거나 단순화하거나 축소하지 않는다.
-- 소스가 정책/제품 선택을 열어두고 있다면 조용히 선택하지 말고 decision owner를 이름 붙인다.
+- 기준 근거가 다르게 말하지 않는 한 기존 제품 계약과 화면 동작을 보존한다.
+- 소스 근거가 정책/제품 선택을 열어두면 결정 주체를 이름 붙인다.
 
 ## 실행 흐름
 
-1. **감사 질문과 경계를 고정한다.**
-   - 질문을 이름 붙인다: source owner, contract owner, static caller/UX contract owner, parity gap, stale-summary revalidation, migration owner, possible later implementation을 위한 evidence sufficiency.
-   - 닫힌 범위를 이름 붙인다: no edits, no TODO conversion, no doc restructuring, no deploy, no live mutation, no broad cleanup.
+1. **실용 질문과 경계를 고정한다.**
+   - 사용자 질문에서 시작한다: 무엇을 따라야 하는지, 기준과 다른 부분이 무엇인지, 아직 결정이 필요한 부분이 무엇인지.
+   - 기준 소스, 계약 소유자, 호출/화면 계약, 이관 기준, 결정 주체 같은 라벨은 답을 더 분명하게 할 때만 붙인다.
+   - 감사 경계를 명시한다: 기본은 읽기 전용이고, 실행 범위는 사용자가 넓힐 때만 연다.
 
-2. **후보 surface를 좁게 수집한다.**
-   - 사용자가 지목한 surface에서 먼저 시작한다.
-   - repo-wide scan보다 path-specific read를 선호한다.
-   - dirty worktree에서는 로컬 변경이 답에 영향을 줄 수 있으면 status와 작은 path-scoped diff부터 본다.
-   - cross-repo 또는 cross-surface 작업에서는 각 후보 owner를 독립적으로 확인한다.
+2. **따라야 할 기준을 찾는다.**
+   - 사용자가 지목한 기능, 변경, 문서, 경로, API, 설정, 동작에서 먼저 시작한다.
+   - 저장소 전체 검색보다 경로를 좁힌 읽기를 선호한다.
+   - 변경 중인 작업트리에서는 로컬 변경이 답에 영향을 줄 수 있으면 상태와 작은 경로별 차이부터 본다.
+   - 여러 저장소 또는 여러 표면이 얽힌 작업에서는 각 후보 기준을 독립적으로 확인한다.
 
 3. **소유권을 추적한다.**
-   - 필요할 때 caller -> adapter/client/helper -> route/API -> command/service -> persistence/schema/test owner를 따라간다.
-   - source owner, static caller/UX contract owner, write owner, read owner, doc owner, task owner, migration owner, decision owner를 구분한다.
-   - current production owner와 legacy, fallback, compatibility, generated, copied, evidence-only surface를 구분한다.
-   - backend capability나 command 존재를 caller intent, access policy, product approval로 취급하지 않는다.
+   - 필요할 때 호출자 -> 어댑터/클라이언트/헬퍼 -> 경로/API -> 명령/서비스 -> 저장소/스키마/테스트 소유자를 따라간다.
+   - 기준 소스, 호출/화면 계약, 쓰기 소유자, 읽기 소유자, 문서 소유자, 작업 소유자, 이관 기준, 결정 주체를 구분한다.
+   - 현재 운영 기준과 레거시, 대체 경로, 호환용, 생성물, 복사본, 근거 전용 표면을 구분한다.
+   - 백엔드 기능은 기능 근거로만 다룬다. 호출자 의도, 접근 정책, 제품 승인에는 별도 근거가 필요하다.
 
-4. **메모리가 아니라 owner와 비교한다.**
-   - 후보 surface를 현재 owner source와 비교한다.
-   - UX parity는 backend capability만 보지 말고 affordance, label, state transition, empty/error state, density, permission behavior까지 비교한다.
-   - source evidence와 사용자 scope가 뒷받침할 때만 gap을 implementation work로 표시한다.
+4. **기준 소스와 비교한다.**
+   - 후보 표면, 제안된 변경, 이관 대상, 리뷰 대상 구현을 현재 기준 소스와 비교한다.
+   - 화면 동작 일치는 백엔드 기능만 보지 말고 어포던스, 레이블, 상태 전이, 빈/오류 상태, 밀도, 권한 동작까지 비교한다.
+   - 소스 근거와 사용자 범위가 뒷받침할 때만 차이를 구현 작업으로 표시한다.
 
-5. **각 finding을 분류한다.**
-   - `Owner`
-   - `Derived/Router`
-   - `Legacy/Compatibility`
-   - `Stale/Superseded`
-   - `Evidence-only`
-   - `Parity gap`
-   - `Caller intent/access policy unconfirmed`
-   - `Decision needed`
-   - `Out of scope`
-   - `Existing-skill handoff`
+5. **라벨은 선택적으로 쓴다.**
+   - 아래 값은 출력 템플릿이 아니라 필요할 때 쓰는 보조 라벨이다.
+   - `Surface role`: `Owner`, `Derived/Router`, `Legacy/Compatibility`, `Stale/Superseded`, `Evidence-only`
+   - `Comparison`: `Matches owner`, `Owner divergence`, `Parity gap`, `Not compared`
+   - `Evidence state`: `Confirmed`, `Caller intent/access policy unconfirmed`, `Decision needed`, `Insufficient current evidence`, `Out of scope`
+   - `Handoff`: `Existing-skill handoff`, 다른 실행 레이어가 이어받아야 할 때만
+
+파생 표면도 기준과 일치할 수 있고, 기준과의 차이도 결정을 필요로 할 수 있다.
 
 ## 출력 계약
 
-명확하다면 recommendation 또는 disposition을 먼저 말한다. finding은 severity 또는 impact 순서를 선호한다.
+실용 답변으로 시작한다. 답에 도움이 되는 필드만 쓴다.
 
-각 finding에는 다음을 포함한다.
+기본 형식:
+- `Recommendation:` 따르기, 고치기, 결정 필요, 근거 부족
+- `Evidence:` 확인한 최소 기준 경로와 비교 경로
+- `Difference:` 일치, 차이, 확인하지 못한 부분
+- `Decision needed:` 아직 남은 정책, 제품, 접근, 소유권 선택
 
-- `Surface:` 질문 대상 파일, route, feature, API, doc, config, behavior
-- `Owner path:` 현재 권위 있는 source
-- `Candidate/caller path:` 경쟁하거나 소비하는 경로가 다를 때
-- `Evidence:` 구체적인 source path, symbol, route, endpoint, schema, test, doc, command, observed behavior
-- `Impact:` 동작 또는 소유권상의 결과
-- `Disposition:` audit taxonomy 중 하나
-- `Next:` 사용자 scope가 허용할 때만
+여러 표면이 있으면 `Findings:` 아래에 표면별 한 줄을 둔다. 필요할 때만 기준 경로, 비교 경로, 근거, 영향, 권고를 덧붙인다.
 
-근거가 부족하면 무엇을 확인했는지 말하고, 추론으로 빈칸을 채우지 말고 `Decision needed`, `Caller intent/access policy unconfirmed`, `Insufficient current evidence`로 분류한다.
+호환성: `Disposition:`은 역할, 비교, 근거 상태를 짧게 요약하는 선택 필드로 쓸 수 있다. 답을 분명하게 할 때만 분류 라벨을 붙인다.
 
-## 위임 경계
+근거가 부족하면 무엇을 확인했는지 말하고 `Decision needed`, `Caller intent/access policy unconfirmed`, `Insufficient current evidence`로 분류한다.
 
-- 코드 구현, refactor scope, verification planning은 감사 이후 change-execution layer가 맡는다.
-- 코드 구조, decision/write-path redesign, contract test는 owner가 확인된 뒤 code-structure layer가 맡는다.
-- 문서 패키지 재구성, current-canon 승격, task log, reference migration은 owner가 확인된 뒤 document/context layer가 맡는다.
-- always-read instruction 편집, token-budget 전략, runtime UI freshness ownership, work-board selection은 사용자가 그것에 대한 source-owner audit을 요청한 경우가 아니면 별도 관심사다.
+권고는 소유권 판정 수준에 머문다. 구현 순서나 검증 계획은 사용자가 범위를 넓힐 때만 만든다.
 
-## 안티패턴
+## 핸드오프 경계
 
-- 메모리나 과거 요약을 proof로 쓰기.
-- 구체적인 surface가 있는데 broad grep부터 시작하기.
-- command/API 존재를 implementation approval로 취급하기.
-- copied, generated, fallback, evidence-only surface를 proof 없이 owner로 취급하기.
-- audit-only finding으로 implementation TODO를 열기.
-- read-only audit 중 code, docs, AGENTS file, task state, deployment config를 수정하기.
-- 불확실성을 confident recommendation으로 숨기기.
+기본은 기준 근거가 뒷받침하는 권고에서 멈춘다.
+
+사용자가 범위를 넓히면 감사 결과를 코드 수정, 리팩터, 테스트, 문서 재구성, 작업 상태 정리 같은 후속 실행의 입력으로 쓴다.
+
+런타임 화면 최신성, always-read 지시문, 토큰 예산, 작업 보드 선택은 사용자가 그 소유권을 물을 때만 기준 소스 감사로 다룬다.
