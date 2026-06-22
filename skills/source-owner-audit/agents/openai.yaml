@@ -1,0 +1,4 @@
+interface:
+  display_name: "Source Owner Audit"
+  short_description: "Audit source owners and contract evidence before changes"
+  default_prompt: "Use $source-owner-audit to identify the current source owner, contract evidence, and disposition before changing implementation."
