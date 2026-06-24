@@ -30,6 +30,8 @@ Default to read-only audit work: evidence, comparison, classification, and owner
    - Start with the user's question: what should this follow, what differs from that owner, or what decision remains open.
    - Add owner labels such as source owner, contract owner, caller/UX owner, migration owner, or decision owner only when they make the answer clearer.
    - Keep the audit boundary explicit: read-only by default; execution scope only when the user expands it.
+   - Treat explicit read-only, investigation-only, prohibition, exclusion, or scope-limit wording as binding execution boundaries; unless the user expands scope, audit findings alone do not authorize edits, cleanup, or implementation sequencing.
+   - Resolve the current owner surface before memory, prior summaries, old task notes, stale docs, or candidate implementations shape the conclusion; until then, label conclusions as inference or insufficient current evidence.
 
 2. **Find what to follow.**
    - Use the feature, change, doc, route, API, config, or behavior named by the user first.
