@@ -42,10 +42,6 @@ Use $source-owner-audit to check whether this doc is still true against the curr
 - You want a read-only review of a proposed or current implementation against the owner
 - You need to separate “the backend supports this” from “the UI or product approved this behavior”
 
-## Related Skills
-
-This skill works independently. Related skills in the same family include [`structure-first`](https://github.com/perhapsspy/structure-first), [`project-context`](https://github.com/perhapsspy/project-context), and [`justified-change`](https://github.com/perhapsspy/justified-change).
-
 ## Support
 
 [![Buy Me A Coffee](https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png)](https://www.buymeacoffee.com/perhapsspy)
