@@ -83,4 +83,4 @@ Stop at owner-backed recommendation by default.
 
 If the user expands scope, use the audit result as input for edits, refactors, tests, document restructuring, task-state work, or other follow-up execution.
 
-Treat runtime UI freshness, always-read instructions, token budgeting, and work-board selection as source-owner questions only when the user asks for that ownership.
+Treat runtime UI freshness, always-read instructions, token budgeting, and task-state surface selection as source-owner questions only when the user asks for that ownership.
