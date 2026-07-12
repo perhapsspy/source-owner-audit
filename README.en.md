@@ -4,9 +4,7 @@
 
 ## Summary
 
-`source-owner-audit` helps an agent answer: “which code, API, config, or doc should we follow now, and does this change match it?”
-
-It is read-only. It finds the source owner first, then reports evidence, mismatches, and a recommendation. File edits are only in scope when the user expands the task.
+When it is unclear what a change should follow, `source-owner-audit` finds the relevant code, API, config, or document first. It reports where the current change differs and what still needs a human decision, without editing files.
 
 It turns broad source-of-truth questions into three concrete answers:
 
